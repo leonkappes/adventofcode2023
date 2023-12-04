@@ -6,6 +6,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 )
 
 var cardMap map[int]*Card
@@ -45,6 +46,7 @@ func (c *Card) CalculateWonCards() {
 }
 
 func main() {
+	tm := time.Now()
 	b, err := os.ReadFile("day4/input.txt")
 	if err != nil {
 		fmt.Print(err)
@@ -56,11 +58,11 @@ func main() {
 	totalPoints := 0
 
 	for id, line := range lines {
-		winningNumbers := slices.DeleteFunc(strings.Split(line[strings.IndexByte(line, ':')+1:strings.IndexByte(line, '|')], " "), func(e string) bool {
-			return e == "" || e == " "
+		winningNumbers := strings.FieldsFunc(line[strings.IndexByte(line, ':')+1:strings.IndexByte(line, '|')], func(r rune) bool {
+			return r == ' '
 		})
-		ownNumbers := slices.DeleteFunc(strings.Split(line[strings.IndexByte(line, '|')+1:], " "), func(e string) bool {
-			return e == "" || e == " "
+		ownNumbers := strings.FieldsFunc(line[strings.IndexByte(line, '|')+1:], func(r rune) bool {
+			return r == ' '
 		})
 		card := &Card{
 			id:              id + 1,
@@ -87,4 +89,6 @@ func main() {
 	}
 
 	fmt.Printf("[Part 2] Total Cards: %d\n", cardSum)
+	elapsed := time.Since(tm)
+	fmt.Printf("%v", elapsed)
 }
